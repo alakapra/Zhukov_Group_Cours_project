@@ -30,6 +30,7 @@ tClock.Start();
         {
             MajorObject = new MajorWork();
             MajorObject.SetTime();
+            MajorObject.Modify = false;// заборона запису
             About A = new About(); // створення форми About
             A.tAbout.Start();
             A.ShowDialog(); // відображення діалогового вікна About
@@ -97,11 +98,14 @@ tClock.Start();
 
         private void зберегтиЯкToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (sfdSave.ShowDialog() == DialogResult.OK)// Виклик діалогового вікна збереження файлу
-{
-                MessageBox.Show(sfdSave.FileName);
+            if (sfdSave.ShowDialog() == DialogResult.OK) // Виклик діалогового вікна збереження
+            {
+                MajorObject.WriteSaveFileName(sfdSave.FileName); // написання імені файлу
+                MajorObject.SaveToFile(); // метод збереження в файл 
             }
+
         }
+
 
         private void відкритиToolStripMenuItem_Click(object sender, EventArgs e)
         {
