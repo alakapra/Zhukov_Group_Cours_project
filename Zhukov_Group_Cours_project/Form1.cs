@@ -1,5 +1,4 @@
-﻿using Google.Apis.Drive.v3.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,8 +12,8 @@ namespace Zhukov_Group_Cours_project
 {
     public partial class Form1 : Form
     {
-        private bool Mode;// Режим дозволу / заборони введення даних
-        private MajorWork MajorObject;
+        private bool Mode; // Режим дозволу / заборони введення даних
+        private MajorWork MajorObject; // Створення об'єкта класу MajorWork
         public Form1()
         {
             InitializeComponent();
@@ -29,10 +28,11 @@ tClock.Start();
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            MajorObject = new MajorWork();
+            MajorObject.SetTime();
             About A = new About(); // створення форми About
             A.tAbout.Start();
             A.ShowDialog(); // відображення діалогового вікна About
-            MajorObject = new MajorWork();
             this.Mode = true;
         }
 
@@ -40,13 +40,12 @@ tClock.Start();
         {
             if (Mode)
             {
-                MajorObject = new MajorWork();
-                MajorObject.SetTime();
                 tbInput.Enabled = true;// Режим дозволу введення
                 tbInput.Focus();
                 tClock.Start();
                 bStart.Text = "Стоп"; // зміна тексту на кнопці на "Стоп"
                 this.Mode = false;
+                пускToolStripMenuItem.Text = "Стоп";
             }
             else
             {
@@ -54,6 +53,10 @@ tClock.Start();
                 tClock.Stop();
                 bStart.Text = "Пуск";// зміна тексту на кнопці на "Пуск"
                 this.Mode = true;
+                MajorObject.Write(tbInput.Text);// Запис даних у об'єкт
+                MajorObject.Task();// Обробка даних
+                label1.Text = MajorObject.Read();// Відображення результату
+                пускToolStripMenuItem.Text = "Старт";
             }
         }
 
@@ -78,7 +81,55 @@ tClock.Start();
         {
             string s;
             s = (System.DateTime.Now - MajorObject.GetTime()).ToString();
-            MessageBox.Show(s, "Час роботи програми"); // Виведення часу роботи програми і повідомлення "Час роботи програми" на екран
+            MessageBox.Show(s, "Час роботи програми");
+        }
+
+        private void вихідToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void проПрограмуToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            About A = new About();
+            A.ShowDialog();
+        }
+
+        private void зберегтиЯкToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sfdSave.ShowDialog() == DialogResult.OK)// Виклик діалогового вікна збереження файлу
+{
+                MessageBox.Show(sfdSave.FileName);
+            }
+        }
+
+        private void відкритиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ofdOpen.ShowDialog() == DialogResult.OK) // Виклик діалогового вікна відкриття файлу
+
+            {
+                MessageBox.Show(ofdOpen.FileName);
+            }
+        }
+
+        private void проНакопичувачіToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] Disks = System.IO.Directory.GetLogicalDrives(); // Строковий масив з логічніх дисків
+string disk = "";
+            for (int i = 0; i < Disks.Length; i++)
+            {
+                try
+                {
+                    System.IO.DriveInfo D = new System.IO.DriveInfo(Disks[i]);
+                    disk += D.Name + "-" + (D.TotalSize / (int)Math.Pow(1024, 3)).ToString() + " GB -" + (D.TotalFreeSpace / (int)Math.Pow(1024, 3)).ToString() + " GB free space" + (char)13;// змінній присвоюється ім’я диска, загальна кількість місця и вільне місце на диску
+                }
+                catch
+                {
+                    disk += Disks[i] + "- не готовий" + (char)13; // якщо пристрій не готовий,то виведення на екран ім’я пристрою і повідомлення «не готовий»
+}
+            }
+
+            MessageBox.Show(disk, "Накопичувачі");
         }
     }
 }
